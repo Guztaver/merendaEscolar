@@ -1,0 +1,54 @@
+services:
+  database:
+    image: postgres:15
+    container_name: merenda_escolar_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: merenda_escolar
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: merenda_escolar_backend
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgres://postgres:password@database:5432/merenda_escolar
+      POSTGRES_HOST: database
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: merenda_escolar
+    depends_on:
+      - database
+    volumes:
+      - ./backend:/usr/src/app
+      - /usr/src/app/node_modules
+    command: npm run start:dev
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: merenda_escolar_frontend
+    ports:
+      - "4200:4200"
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+      # Exclude backend from volume mapping to avoid confusion in container
+      - /usr/src/app/backend
+    depends_on:
+      - backend
+    environment:
+      # If we need to proxy to backend
+      BACKEND_URL: http://backend:3000
+
+volumes:
+  postgres_data:
