@@ -1,0 +1,38 @@
+<div class="container">
+    <div class="header">
+        <h1>Suppliers</h1>
+        <a [routerLink]="['/acquisition/suppliers/new']" class="btn btn-primary">Add Supplier</a>
+    </div>
+
+    @if (suppliers().length === 0) {
+    <p class="empty-state">No suppliers found. Create your first supplier to get started.</p>
+    } @else {
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Document</th>
+                <th>Type</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (supplier of suppliers(); track supplier.id) {
+            <tr>
+                <td>{{ supplier.name }}</td>
+                <td>{{ supplier.document }}</td>
+                <td>
+                    <span [class]="'badge badge-' + supplier.type">
+                        {{ getSupplierTypeLabel(supplier.type) }}
+                    </span>
+                </td>
+                <td class="actions">
+                    <a [routerLink]="['/acquisition/suppliers', supplier.id]" class="btn btn-secondary">Edit</a>
+                    <button (click)="deleteSupplier(supplier.id)" class="btn btn-danger">Delete</button>
+                </td>
+            </tr>
+            }
+        </tbody>
+    </table>
+    }
+</div>

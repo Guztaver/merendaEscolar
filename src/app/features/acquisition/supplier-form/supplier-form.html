@@ -1,0 +1,42 @@
+<div class="container">
+    <div class="header">
+        <h1>{{ isEditMode() ? 'Edit Supplier' : 'New Supplier' }}</h1>
+        <a [routerLink]="['/acquisition/suppliers']" class="btn btn-secondary">Back to List</a>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="form">
+        <div class="form-group">
+            <label for="name">Name *</label>
+            <input type="text" id="name" formControlName="name" class="form-control"
+                [class.error]="form.controls.name.invalid && form.controls.name.touched">
+            @if (form.controls.name.invalid && form.controls.name.touched) {
+            <span class="error-message">Name is required</span>
+            }
+        </div>
+
+        <div class="form-group">
+            <label for="document">Document (CNPJ/CPF) *</label>
+            <input type="text" id="document" formControlName="document" class="form-control"
+                [class.error]="form.controls.document.invalid && form.controls.document.touched">
+            @if (form.controls.document.invalid && form.controls.document.touched) {
+            <span class="error-message">Document is required</span>
+            }
+        </div>
+
+        <div class="form-group">
+            <label for="type">Type *</label>
+            <select id="type" formControlName="type" class="form-control">
+                @for (type of supplierTypes; track type.value) {
+                <option [value]="type.value">{{ type.label }}</option>
+                }
+            </select>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary" [disabled]="form.invalid">
+                {{ isEditMode() ? 'Update' : 'Create' }}
+            </button>
+            <a [routerLink]="['/acquisition/suppliers']" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>

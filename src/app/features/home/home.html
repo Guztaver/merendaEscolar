@@ -16,10 +16,10 @@
                 class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 px-8 rounded-full shadow-lg shadow-emerald-600/30 transition-all transform hover:-translate-y-1 block">
                 Acessar Painel
             </a>
-            <button
-                class="bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 font-semibold py-3 px-8 rounded-full shadow-sm transition-all">
+            <a routerLink="/acquisition"
+                class="bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 font-semibold py-3 px-8 rounded-full shadow-sm transition-all block">
                 Ver Relatórios
-            </button>
+            </a>
         </div>
     </div>
 
@@ -27,8 +27,8 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
 
         <!-- Card 1: Nutritional -->
-        <div
-            class="group relative bg-white rounded-2xl p-8 shadow-sm border border-slate-200 hover:shadow-xl hover:border-emerald-200 transition-all duration-300">
+        <a routerLink="/nutritional-planning"
+            class="group relative bg-white rounded-2xl p-8 shadow-sm border border-slate-200 hover:shadow-xl hover:border-emerald-200 transition-all duration-300 block no-underline cursor-pointer">
             <div
                 class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -45,11 +45,11 @@
                 class="flex items-center text-orange-600 text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity transform translate-y-2 group-hover:translate-y-0">
                 Gerenciar Cardápios →
             </div>
-        </div>
+        </a>
 
         <!-- Card 2: Acquisition -->
-        <div
-            class="group relative bg-white rounded-2xl p-8 shadow-sm border border-slate-200 hover:shadow-xl hover:border-emerald-200 transition-all duration-300">
+        <a routerLink="/acquisition"
+            class="group relative bg-white rounded-2xl p-8 shadow-sm border border-slate-200 hover:shadow-xl hover:border-emerald-200 transition-all duration-300 block no-underline cursor-pointer">
             <div
                 class="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -66,11 +66,11 @@
                 class="flex items-center text-emerald-600 text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity transform translate-y-2 group-hover:translate-y-0">
                 Verificar Cotas →
             </div>
-        </div>
+        </a>
 
         <!-- Card 3: Logistics -->
-        <div
-            class="group relative bg-white rounded-2xl p-8 shadow-sm border border-slate-200 hover:shadow-xl hover:border-emerald-200 transition-all duration-300">
+        <a routerLink="/logistics"
+            class="group relative bg-white rounded-2xl p-8 shadow-sm border border-slate-200 hover:shadow-xl hover:border-emerald-200 transition-all duration-300 block no-underline cursor-pointer">
             <div
                 class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -87,7 +87,7 @@
                 class="flex items-center text-blue-600 text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity transform translate-y-2 group-hover:translate-y-0">
                 Acessar Almoxarifado →
             </div>
-        </div>
+        </a>
 
     </div>
 </main>

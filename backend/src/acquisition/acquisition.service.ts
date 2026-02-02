@@ -1,15 +1,105 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Between } from 'typeorm';
 import { Purchase } from './entities/purchase.entity';
-import { SupplierType } from './entities/supplier.entity';
+import { Supplier, SupplierType } from './entities/supplier.entity';
+import { CreateSupplierDto } from './dto/create-supplier.dto';
+import { CreatePurchaseDto } from './dto/create-purchase.dto';
 
 @Injectable()
 export class AcquisitionService {
     constructor(
         @InjectRepository(Purchase)
         private purchaseRepository: Repository<Purchase>,
+        @InjectRepository(Supplier)
+        private supplierRepository: Repository<Supplier>,
     ) { }
+
+    // Supplier CRUD operations
+    async createSupplier(dto: CreateSupplierDto): Promise<Supplier> {
+        const supplier = this.supplierRepository.create(dto);
+        return this.supplierRepository.save(supplier);
+    }
+
+    async findAllSuppliers(): Promise<Supplier[]> {
+        return this.supplierRepository.find({
+            relations: ['purchases'],
+        });
+    }
+
+    async findOneSupplier(id: string): Promise<Supplier> {
+        const supplier = await this.supplierRepository.findOne({
+            where: { id },
+            relations: ['purchases'],
+        });
+        if (!supplier) {
+            throw new NotFoundException(`Supplier with ID ${id} not found`);
+        }
+        return supplier;
+    }
+
+    async updateSupplier(id: string, dto: Partial<CreateSupplierDto>): Promise<Supplier> {
+        await this.findOneSupplier(id); // Ensure exists
+        await this.supplierRepository.update(id, dto);
+        return this.findOneSupplier(id);
+    }
+
+    async removeSupplier(id: string): Promise<void> {
+        const supplier = await this.findOneSupplier(id);
+        await this.supplierRepository.remove(supplier);
+    }
+
+    // Purchase CRUD operations
+    async createPurchase(dto: CreatePurchaseDto): Promise<Purchase> {
+        const supplier = await this.findOneSupplier(dto.supplierId);
+        const purchase = this.purchaseRepository.create({
+            amount: dto.amount,
+            date: dto.date,
+            supplier,
+        });
+        return this.purchaseRepository.save(purchase);
+    }
+
+    async findAllPurchases(): Promise<Purchase[]> {
+        return this.purchaseRepository.find({
+            relations: ['supplier'],
+        });
+    }
+
+    async findOnePurchase(id: string): Promise<Purchase> {
+        const purchase = await this.purchaseRepository.findOne({
+            where: { id },
+            relations: ['supplier'],
+        });
+        if (!purchase) {
+            throw new NotFoundException(`Purchase with ID ${id} not found`);
+        }
+        return purchase;
+    }
+
+    async updatePurchase(id: string, dto: Partial<CreatePurchaseDto>): Promise<Purchase> {
+        const purchase = await this.findOnePurchase(id);
+
+        if (dto.supplierId) {
+            const supplier = await this.findOneSupplier(dto.supplierId);
+            purchase.supplier = supplier;
+        }
+
+        if (dto.amount !== undefined) {
+            purchase.amount = dto.amount;
+        }
+
+        if (dto.date) {
+            purchase.date = dto.date;
+        }
+
+        return this.purchaseRepository.save(purchase);
+    }
+
+    async removePurchase(id: string): Promise<void> {
+        const purchase = await this.findOnePurchase(id);
+        await this.purchaseRepository.remove(purchase);
+    }
 
     async calculateFamilyFarmingPercentage(year: number): Promise<{
         total: number;
@@ -48,3 +138,4 @@ export class AcquisitionService {
         };
     }
 }
+
