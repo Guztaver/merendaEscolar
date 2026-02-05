@@ -1,49 +1,49 @@
 <div class="container">
     <div class="header">
-        <h1>{{ isEditMode() ? 'Edit Purchase' : 'New Purchase' }}</h1>
-        <a [routerLink]="['/acquisition/purchases']" class="btn btn-secondary">Back to List</a>
+        <h1>{{ isEditMode() ? 'Editar Compra' : 'Nova Compra' }}</h1>
+        <a [routerLink]="['/acquisition/purchases']" class="btn btn-secondary">Voltar à Lista</a>
     </div>
 
     <form [formGroup]="form" (ngSubmit)="onSubmit()" class="form">
         <div class="form-group">
-            <label for="date">Date *</label>
+            <label for="date">Data *</label>
             <input type="date" id="date" formControlName="date" class="form-control"
                 [class.error]="form.controls.date.invalid && form.controls.date.touched">
             @if (form.controls.date.invalid && form.controls.date.touched) {
-            <span class="error-message">Date is required</span>
+            <span class="error-message">Data é obrigatória</span>
             }
         </div>
 
         <div class="form-group">
-            <label for="supplierId">Supplier *</label>
+            <label for="supplierId">Fornecedor *</label>
             <select id="supplierId" formControlName="supplierId" class="form-control"
                 [class.error]="form.controls.supplierId.invalid && form.controls.supplierId.touched">
-                <option value="">Select a supplier</option>
+                <option value="">Selecione um fornecedor</option>
                 @for (supplier of suppliers(); track supplier.id) {
                 <option [value]="supplier.id">
-                    {{ supplier.name }} ({{ supplier.type === 'family_farming' ? 'Family Farming' : 'Regular' }})
+                    {{ supplier.name }} ({{ supplier.type === 'family_farming' ? 'Agricultura Familiar' : 'Regular' }})
                 </option>
                 }
             </select>
             @if (form.controls.supplierId.invalid && form.controls.supplierId.touched) {
-            <span class="error-message">Supplier is required</span>
+            <span class="error-message">Fornecedor é obrigatório</span>
             }
         </div>
 
         <div class="form-group">
-            <label for="amount">Amount (R$) *</label>
+            <label for="amount">Valor (R$) *</label>
             <input type="number" id="amount" formControlName="amount" class="form-control" step="0.01" min="0"
                 [class.error]="form.controls.amount.invalid && form.controls.amount.touched">
             @if (form.controls.amount.invalid && form.controls.amount.touched) {
-            <span class="error-message">Amount must be greater than 0</span>
+            <span class="error-message">Valor deve ser maior que 0</span>
             }
         </div>
 
         <div class="form-actions">
             <button type="submit" class="btn btn-primary" [disabled]="form.invalid">
-                {{ isEditMode() ? 'Update' : 'Create' }}
+                {{ isEditMode() ? 'Atualizar' : 'Criar' }}
             </button>
-            <a [routerLink]="['/acquisition/purchases']" class="btn btn-secondary">Cancel</a>
+            <a [routerLink]="['/acquisition/purchases']" class="btn btn-secondary">Cancelar</a>
         </div>
     </form>
 </div>

@@ -1,0 +1,141 @@
+<div class="container">
+    <div class="header">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-800">Movimentações de Estoque</h1>
+            <p class="text-gray-600">Histórico completo de entradas, saídas e ajustes</p>
+        </div>
+        <div class="header-actions">
+            <a [routerLink]="['/logistics/dashboard']" class="btn btn-secondary">Voltar ao Painel</a>
+            <a [routerLink]="['/logistics/movements/new']" class="btn btn-primary">+ Nova Movimentação</a>
+        </div>
+    </div>
+
+    <div class="filters">
+        <div class="filter-group">
+            <label for="type">Tipo:</label>
+            <select id="type" class="filter-select" (change)="onTypeChange($event)">
+                @for (option of typeOptions; track option.value) {
+                    <option [value]="option.value">{{ option.label }}</option>
+                }
+            </select>
+        </div>
+
+        <div class="filter-group">
+            <label for="reason">Motivo:</label>
+            <select id="reason" class="filter-select" (change)="onReasonChange($event)">
+                @for (option of reasonOptions; track option.value) {
+                    <option [value]="option.value">{{ option.label }}</option>
+                }
+            </select>
+        </div>
+
+        <div class="filter-group">
+            <label for="startDate">Data Início:</label>
+            <input
+                type="date"
+                id="startDate"
+                class="filter-input"
+                [value]="startDate()"
+                (input)="onStartDateChange($event)"
+            />
+        </div>
+
+        <div class="filter-group">
+            <label for="endDate">Data Fim:</label>
+            <input
+                type="date"
+                id="endDate"
+                class="filter-input"
+                [value]="endDate()"
+                (input)="onEndDateChange($event)"
+            />
+        </div>
+
+        <button class="btn btn-clear" (click)="clearFilters()">Limpar Filtros</button>
+    </div>
+
+    @if (loading()) {
+        <div class="loading">Carregando movimentações...</div>
+    } @else if (filteredMovements().length === 0) {
+        <div class="empty-state">
+            <div class="empty-icon">📋</div>
+            <h3>Nenhuma movimentação encontrada</h3>
+            <p>Não há movimentações com os filtros selecionados.</p>
+            <a [routerLink]="['/logistics/movements/new']" class="btn btn-primary">+ Registrar Primeira Movimentação</a>
+        </div>
+    } @else {
+        <div class="movements-table-container">
+            <table class="movements-table">
+                <thead>
+                    <tr>
+                        <th>Data/Hora</th>
+                        <th>Item</th>
+                        <th>Tipo</th>
+                        <th>Motivo</th>
+                        <th>Quantidade</th>
+                        <th>Saldo Anterior</th>
+                        <th>Novo Saldo</th>
+                        <th>Detalhes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (movement of filteredMovements(); track movement.id) {
+                        <tr class="movement-row" [class]="getMovementTypeClass(movement.movementType)">
+                            <td class="date-cell">
+                                <div class="date-main">{{ formatDateOnly(movement.createdAt) }}</div>
+                                <div class="date-time">{{ formatDate(movement.createdAt) }}</div>
+                            </td>
+                            <td class="item-cell">
+                                <strong>{{ movement.stockItem?.name || 'Item removido' }}</strong>
+                                @if (movement.stockItem?.code) {
+                                    <div class="item-code">{{ movement.stockItem?.code }}</div>
+                                }
+                            </td>
+                            <td class="type-cell">
+                                <span class="type-badge" [class]="getMovementTypeClass(movement.movementType)">
+                                    {{ getMovementTypeLabel(movement.movementType) }}
+                                </span>
+                            </td>
+                            <td class="reason-cell">
+                                {{ getMovementReasonLabel(movement.reason) }}
+                            </td>
+                            <td class="quantity-cell">
+                                <span class="quantity-value">
+                                    {{ movement.quantity }} {{ movement.stockItem?.unit || '' }}
+                                </span>
+                            </td>
+                            <td class="balance-cell">
+                                <span class="balance-previous">{{ movement.previousBalance }}</span>
+                            </td>
+                            <td class="balance-cell">
+                                <span class="balance-new">{{ movement.newBalance }}</span>
+                            </td>
+                            <td class="details-cell">
+                                @if (movement.notes) {
+                                    <div class="detail-notes" title="{{ movement.notes }}">
+                                        📝 {{ movement.notes }}
+                                    </div>
+                                }
+                                @if (movement.batchNumber) {
+                                    <div class="detail-batch">Lote: {{ movement.batchNumber }}</div>
+                                }
+                                @if (movement.expiryDate) {
+                                    <div class="detail-expiry">
+                                        Validade: {{ formatDateOnly(movement.expiryDate) }}
+                                    </div>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="summary">
+            <p class="text-gray-600">
+                Mostrando <strong>{{ filteredMovements().length }}</strong>
+                de <strong>{{ movements().length }}</strong> movimentações
+            </p>
+        </div>
+    }
+</div>

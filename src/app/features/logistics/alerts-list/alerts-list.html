@@ -1,0 +1,130 @@
+<div class="container">
+    <div class="header">
+        <h1 class="text-2xl font-bold text-gray-800">Alertas de Estoque</h1>
+        <div class="header-actions">
+            <a [routerLink]="['/logistics/dashboard']" class="btn btn-secondary">Voltar ao Painel</a>
+            <a [routerLink]="['/logistics/movements/new']" class="btn btn-primary">+ Nova Movimentação</a>
+        </div>
+    </div>
+
+    <div class="filters">
+        <div class="filter-group">
+            <label for="severity">Gravidade:</label>
+            <select id="severity" class="filter-select" (change)="onSeverityChange($event)">
+                <option value="all">Todas</option>
+                <option value="CRITICAL">Críticas</option>
+                <option value="HIGH">Altas</option>
+                <option value="MEDIUM">Médias</option>
+                <option value="LOW">Baixas</option>
+            </select>
+        </div>
+
+        <div class="filter-group">
+            <label for="status">Status:</label>
+            <select id="status" class="filter-select" (change)="onStatusChange($event)">
+                <option value="OPEN">Abertos</option>
+                <option value="all">Todos</option>
+                <option value="ACKNOWLEDGED">Reconhecidos</option>
+                <option value="RESOLVED">Resolvidos</option>
+                <option value="DISMISSED">Dispensados</option>
+            </select>
+        </div>
+
+        <div class="filter-group">
+            <label for="type">Tipo:</label>
+            <select id="type" class="filter-select" (change)="onTypeChange($event)">
+                <option value="all">Todos</option>
+                <option value="LOW_STOCK">Estoque Baixo</option>
+                <option value="OVERSTOCK">Estoque Excessivo</option>
+                <option value="EXPIRY_SOON">Vencendo em Breve</option>
+                <option value="EXPIRED">Vencido</option>
+                <option value="OUT_OF_STOCK">Esgotado</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="alerts-container">
+        @for (alert of filteredAlerts(); track alert.id) {
+            <div class="alert-card" [class]="getSeverityClass(alert.severity)">
+                <div class="alert-header">
+                    <div class="alert-badges">
+                        <span class="badge severity-badge" [class]="getSeverityClass(alert.severity)">
+                            {{ getSeverityLabel(alert.severity) }}
+                        </span>
+                        <span class="badge status-badge" [class]="getStatusClass(alert.status)">
+                            {{ getStatusLabel(alert.status) }}
+                        </span>
+                        <span class="badge type-badge">
+                            {{ getTypeLabel(alert.type) }}
+                        </span>
+                    </div>
+                    <div class="alert-time">{{ formatDate(alert.createdAt) }}</div>
+                </div>
+
+                <div class="alert-content">
+                    <h3 class="alert-item-name">{{ alert.stockItem?.name || 'Item não encontrado' }}</h3>
+                    <p class="alert-message">{{ alert.message }}</p>
+
+                    @if (alert.currentQuantity !== undefined) {
+                        <div class="alert-details">
+                            <span class="detail-item">
+                                <strong>Quantidade Atual:</strong> {{ alert.currentQuantity }}
+                            </span>
+                            @if (alert.threshold !== undefined) {
+                                <span class="detail-item">
+                                    <strong>Limite:</strong> {{ alert.threshold }}
+                                </span>
+                            }
+                        </div>
+                    }
+
+                    @if (alert.expiryDate) {
+                        <div class="alert-details">
+                            <span class="detail-item">
+                                <strong>Data de Validade:</strong> {{ formatDate(alert.expiryDate.toString()) }}
+                            </span>
+                            @if (alert.batchNumber) {
+                                <span class="detail-item">
+                                    <strong>Lote:</strong> {{ alert.batchNumber }}
+                                </span>
+                            }
+                        </div>
+                    }
+
+                    @if (alert.resolutionNotes) {
+                        <div class="resolution-notes">
+                            <strong>Resolução:</strong> {{ alert.resolutionNotes }}
+                        </div>
+                    }
+                </div>
+
+                @if (canActOnAlert(alert)) {
+                    <div class="alert-actions">
+                        @if (alert.status === 'OPEN') {
+                            <button class="action-btn acknowledge-btn" (click)="acknowledgeAlert(alert.id)">
+                                ✓ Reconhecer
+                            </button>
+                        }
+                        <button class="action-btn resolve-btn" (click)="resolveAlert(alert.id)">
+                            ✓ Resolver
+                        </button>
+                        <button class="action-btn dismiss-btn" (click)="dismissAlert(alert.id)">
+                            ✕ Dispensar
+                        </button>
+                    </div>
+                }
+            </div>
+        }
+
+        @if (filteredAlerts().length === 0) {
+            <div class="empty-state">
+                <p>Nenhum alerta encontrado.</p>
+                @if (alerts().length > 0) {
+                    <p class="hint">Tente ajustar os filtros de busca.</p>
+                } @else {
+                    <p class="hint">Tudo está em ordem! Nenhum alerta no momento.</p>
+                }
+            </div>
+        }
+    </div>
+</div>

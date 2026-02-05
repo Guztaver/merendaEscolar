@@ -33,7 +33,7 @@ export class AcquisitionService {
             relations: ['purchases'],
         });
         if (!supplier) {
-            throw new NotFoundException(`Supplier with ID ${id} not found`);
+            throw new NotFoundException(`Fornecedor com ID ${id} não encontrado`);
         }
         return supplier;
     }
@@ -72,7 +72,7 @@ export class AcquisitionService {
             relations: ['supplier'],
         });
         if (!purchase) {
-            throw new NotFoundException(`Purchase with ID ${id} not found`);
+            throw new NotFoundException(`Compra com ID ${id} não encontrada`);
         }
         return purchase;
     }

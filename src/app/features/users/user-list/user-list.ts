@@ -25,7 +25,7 @@ export class UserListComponent {
     }
 
     deleteUser(id: string) {
-        if (confirm('Are you sure?')) {
+        if (confirm('Tem certeza?')) {
             this.usersService.delete(id).subscribe(() => {
                 this.loadUsers();
             });

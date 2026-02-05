@@ -20,7 +20,7 @@ export class UsersController {
     async findOne(@Param('id') id: string) {
         const user = await this.usersService.findOneById(id);
         if (!user) {
-            throw new NotFoundException(`User with ID ${id} not found`);
+            throw new NotFoundException(`Usuário com ID ${id} não encontrado`);
         }
         return user;
     }

@@ -1,0 +1,130 @@
+<div class="container">
+    <div class="header">
+        <h1 class="text-2xl font-bold text-gray-800">Estoque Inteligente</h1>
+        <div class="nav-links">
+            <a [routerLink]="['/logistics/stock-items']" class="btn btn-secondary">Itens do Estoque</a>
+            <a [routerLink]="['/logistics/movements']" class="btn btn-secondary">Movimentações</a>
+            <a [routerLink]="['/logistics/alerts']" class="btn btn-secondary">Alertas</a>
+            <a [routerLink]="['/logistics/stock-items/new']" class="btn btn-primary">+ Novo Item</a>
+        </div>
+    </div>
+
+    @if (dashboardData()) {
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">📦</div>
+                <div class="stat-content">
+                    <div class="stat-label">Total de Itens</div>
+                    <div class="stat-value">{{ dashboardData()!.totalItems }}</div>
+                </div>
+            </div>
+
+            <div class="stat-card stat-warning">
+                <div class="stat-icon">⚠️</div>
+                <div class="stat-content">
+                    <div class="stat-label">Estoque Baixo</div>
+                    <div class="stat-value">{{ dashboardData()!.lowStockCount }}</div>
+                </div>
+            </div>
+
+            <div class="stat-card stat-alert">
+                <div class="stat-icon">🚨</div>
+                <div class="stat-content">
+                    <div class="stat-label">Alertas Abertos</div>
+                    <div class="stat-value">{{ dashboardData()!.openAlertsCount }}</div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">💰</div>
+                <div class="stat-content">
+                    <div class="stat-label">Valor do Estoque</div>
+                    <div class="stat-value">{{ formatCurrency(dashboardData()!.totalStockValue) }}</div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">📊</div>
+                <div class="stat-content">
+                    <div class="stat-label">Movimentações (7 dias)</div>
+                    <div class="stat-value">{{ dashboardData()!.recentMovementsCount }}</div>
+                </div>
+            </div>
+
+            @if (dashboardData()!.criticalAlerts > 0) {
+                <div class="stat-card stat-critical">
+                    <div class="stat-icon">🔴</div>
+                    <div class="stat-content">
+                        <div class="stat-label">Alertas Críticos</div>
+                        <div class="stat-value">{{ dashboardData()!.criticalAlerts }}</div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="recent-activity">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Movimentações Recentes</h2>
+            @if (dashboardData()!.recentMovements.length > 0) {
+                <div class="table-container">
+                    <table class="activity-table">
+                        <thead>
+                            <tr>
+                                <th>Data</th>
+                                <th>Item</th>
+                                <th>Tipo</th>
+                                <th>Quantidade</th>
+                                <th>Saldo Anterior</th>
+                                <th>Novo Saldo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (movement of dashboardData()!.recentMovements.slice(0, 5); track movement.id) {
+                                <tr>
+                                    <td>{{ formatDate(movement.createdAt) }}</td>
+                                    <td>{{ movement.stockItem?.name || movement.stockItemId }}</td>
+                                    <td>
+                                        <span class="badge" [class.badge-in]="movement.movementType === 'IN'"
+                                            [class.badge-out]="movement.movementType === 'OUT'"
+                                            [class.badge-adjustment]="movement.movementType === 'ADJUSTMENT'">
+                                            @switch (movement.movementType) {
+                                                @case ('IN') { 'Entrada' }
+                                                @case ('OUT') { 'Saída' }
+                                                @case ('ADJUSTMENT') { 'Ajuste' }
+                                                @case ('TRANSFER') { 'Transferência' }
+                                            }
+                                        </span>
+                                    </td>
+                                    <td>{{ movement.quantity }} {{ movement.stockItem?.unit || '' }}</td>
+                                    <td>{{ movement.previousBalance }}</td>
+                                    <td>{{ movement.newBalance }}</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            } @else {
+                <p class="no-data">Nenhuma movimentação recente.</p>
+            }
+        </div>
+
+        @if (criticalAlerts().length > 0 || highAlerts().length > 0) {
+            <div class="alerts-section">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Alertas Recentes</h2>
+                <div class="alerts-list">
+                    @for (alert of [...criticalAlerts(), ...highAlerts()].slice(0, 5); track alert.id) {
+                        <div class="alert-card" [class]="getSeverityClass(alert.severity)">
+                            <div class="alert-header">
+                                <span class="alert-badge">{{ getSeverityLabel(alert.severity) }}</span>
+                                <button class="dismiss-btn" (click)="dismissAlert(alert.id)" title="Dispensar alerta">✕</button>
+                            </div>
+                            <div class="alert-message">{{ alert.message }}</div>
+                            <div class="alert-time">há {{ formatDate(alert.createdAt) }}</div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    } @else {
+        <p class="loading">Carregando dados do estoque...</p>
+    }
+</div>

@@ -1,4 +1,5 @@
-<div class="min-h-screen bg-slate-50 font-sans text-slate-900 selection:bg-emerald-100 selection:text-emerald-900">
+<div
+  class="min-h-screen bg-slate-50 font-sans text-slate-900 selection:bg-emerald-100 selection:text-emerald-900 flex flex-col">
   <!-- Navbar -->
   <nav class="sticky top-0 z-50 w-full backdrop-blur-md bg-white/70 border-b border-slate-200 shadow-sm">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -14,12 +15,14 @@
           <span class="font-bold text-xl tracking-tight text-slate-800">Merenda<span
               class="text-emerald-600">Escolar</span></span>
         </div>
+        @if (authService.isAuthenticated()) {
         <div class="hidden md:flex gap-8 text-sm font-medium text-slate-600">
-          <a routerLink="/acquisition" class="hover:text-emerald-600 transition-colors">Painel Geral</a>
+          <a routerLink="/dashboard" class="hover:text-emerald-600 transition-colors">Painel Geral</a>
           <a routerLink="/nutritional-planning" class="hover:text-emerald-600 transition-colors">Cardápios</a>
           <a routerLink="/acquisition" class="hover:text-emerald-600 transition-colors">Aquisições</a>
           <a routerLink="/logistics" class="hover:text-emerald-600 transition-colors">Estoque</a>
         </div>
+        }
         <div class="flex items-center gap-4">
 
 
@@ -50,7 +53,9 @@
     </div>
   </nav>
 
-  <router-outlet></router-outlet>
+  <div class="flex-grow">
+    <router-outlet></router-outlet>
+  </div>
 
   <footer class="mt-20 border-t border-slate-200 py-12 bg-white">
     <div class="max-w-7xl mx-auto px-4 text-center text-slate-400 text-sm">

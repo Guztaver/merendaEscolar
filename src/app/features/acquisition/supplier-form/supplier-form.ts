@@ -27,7 +27,7 @@ export class SupplierFormComponent {
 
     supplierTypes = [
         { value: SupplierType.REGULAR, label: 'Regular' },
-        { value: SupplierType.FAMILY_FARMING, label: 'Family Farming' }
+        { value: SupplierType.FAMILY_FARMING, label: 'Agricultura Familiar' }
     ];
 
     constructor() {

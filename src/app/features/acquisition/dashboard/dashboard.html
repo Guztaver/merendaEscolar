@@ -1,51 +1,95 @@
 <div class="container">
     <div class="header">
-        <h1>Acquisition Dashboard</h1>
+        <h1 class="text-2xl font-bold text-gray-800">Painel de Aquisições</h1>
         <div class="nav-links">
-            <a [routerLink]="['/acquisition/suppliers']" class="btn btn-secondary">Manage Suppliers</a>
-            <a [routerLink]="['/acquisition/purchases']" class="btn btn-secondary">Manage Purchases</a>
+            <a [routerLink]="['/acquisition/suppliers']" class="btn btn-secondary">Gerenciar Fornecedores</a>
+            <a [routerLink]="['/acquisition/purchases']" class="btn btn-secondary">Gerenciar Compras</a>
         </div>
     </div>
 
     <div class="year-selector">
-        <label for="year">Year:</label>
-        <input type="number" id="year" [formControl]="yearControl" class="year-input" min="2000" max="2100">
+        <label for="year">Ano:</label>
+        <select id="year" [formControl]="yearControl" class="year-input">
+            @for (year of availableYears; track year) {
+            <option [value]="year">{{ year }}</option>
+            }
+        </select>
     </div>
 
     @if (stats()) {
     <div class="stats-grid">
         <div class="stat-card">
-            <div class="stat-label">Total Spending</div>
+            <div class="stat-label">Total Gasto</div>
             <div class="stat-value">{{ formatCurrency(stats()!.total) }}</div>
         </div>
 
         <div class="stat-card">
-            <div class="stat-label">Family Farming Spending</div>
+            <div class="stat-label">Gasto com Agricultura Familiar</div>
             <div class="stat-value">{{ formatCurrency(stats()!.familyFarming) }}</div>
         </div>
 
         <div class="stat-card">
-            <div class="stat-label">Family Farming Percentage</div>
+            <div class="stat-label">Percentual de Agricultura Familiar</div>
             <div class="stat-value">{{ stats()!.percentage }}%</div>
         </div>
 
-        <div class="stat-card compliance-card" [ngClass]="getComplianceClass()">
-            <div class="stat-label">Compliance Status</div>
+        <div class="stat-card compliance-card" [class.compliant]="stats()!.isCompliant"
+            [class.non-compliant]="!stats()!.isCompliant">
+            <div class="stat-label">Status de Conformidade</div>
             <div class="stat-value compliance-message">{{ getComplianceMessage() }}</div>
         </div>
     </div>
 
     <div class="progress-bar-container">
-        <label class="progress-label">Family Farming Acquisition Progress</label>
+        <label class="progress-label">Progresso de Aquisição da Agricultura Familiar</label>
         <div class="progress-bar">
-            <div class="progress-fill" [style.width.%]="stats()!.percentage" [ngClass]="getComplianceClass()"></div>
+            <div class="progress-fill" [style.width.%]="stats()!.percentage" [class.compliant]="stats()!.isCompliant"
+                [class.non-compliant]="!stats()!.isCompliant"></div>
         </div>
         <div class="progress-info">
             <span>{{ stats()!.percentage }}%</span>
-            <span class="target">Target: 45%</span>
+            <span class="target">Meta: 45%</span>
         </div>
     </div>
+
+    <div class="purchases-section">
+        <div class="section-header">
+            <h2 class="text-xl font-semibold text-gray-800">Compras Realizadas</h2>
+        </div>
+
+        @if (purchases().length > 0) {
+        <div class="table-container">
+            <table class="purchases-table">
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Fornecedor</th>
+                        <th>Tipo</th>
+                        <th>Valor</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (purchase of purchases(); track purchase.id) {
+                    <tr>
+                        <td>{{ formatDate(purchase.date) }}</td>
+                        <td>{{ purchase.supplier.name }}</td>
+                        <td>
+                            <span class="badge" [class.badge-family]="purchase.supplier.type === 'family_farming'"
+                                [class.badge-regular]="purchase.supplier.type === 'regular'">
+                                {{ purchase.supplier.type === 'family_farming' ? 'Agricultura Familiar' : 'Regular' }}
+                            </span>
+                        </td>
+                        <td class="amount">{{ formatCurrency(purchase.amount) }}</td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        } @else {
+        <p class="no-data">Nenhuma compra registrada para o ano selecionado.</p>
+        }
+    </div>
     } @else {
-    <p class="loading">Loading statistics...</p>
+    <p class="loading">Carregando estatísticas...</p>
     }
 </div>

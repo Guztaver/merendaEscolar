@@ -1,0 +1,235 @@
+<div class="max-w-screen-xl mx-auto p-6 w-full">
+    <!-- Header -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-800 mb-2">Painel Geral</h1>
+        <p class="text-gray-600">Visão completa do sistema de Merenda Escolar</p>
+    </div>
+
+    <!-- Year Selector -->
+    <div class="mb-6 flex items-center gap-3">
+        <label for="year" class="text-sm font-medium text-gray-700">Ano de Referência:</label>
+        <select id="year" [formControl]="yearControl"
+            class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all">
+            @for (year of availableYears; track year) {
+            <option [value]="year">{{ year }}</option>
+            }
+        </select>
+    </div>
+
+    @if (stats()) {
+    <!-- Quick Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <!-- Total Spent Card -->
+        <div
+            class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6 border border-blue-200 shadow-sm hover:shadow-md transition-shadow">
+            <div class="flex items-center justify-between mb-4">
+                <div
+                    class="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center shadow-lg shadow-blue-600/20">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                        stroke="currentColor" class="w-6 h-6 text-white">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+            </div>
+            <p class="text-sm text-blue-700 font-medium mb-1">Total Investido</p>
+            <p class="text-2xl font-bold text-blue-900">{{ formatCurrency(stats()!.total) }}</p>
+        </div>
+
+        <!-- Family Farming Card -->
+        <div
+            class="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-6 border border-green-200 shadow-sm hover:shadow-md transition-shadow">
+            <div class="flex items-center justify-between mb-4">
+                <div
+                    class="w-12 h-12 bg-green-600 rounded-lg flex items-center justify-center shadow-lg shadow-green-600/20">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                        stroke="currentColor" class="w-6 h-6 text-white">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
+                    </svg>
+                </div>
+            </div>
+            <p class="text-sm text-green-700 font-medium mb-1">Agricultura Familiar</p>
+            <p class="text-2xl font-bold text-green-900">{{ formatCurrency(stats()!.familyFarming) }}</p>
+            <p class="text-sm text-green-600 font-semibold mt-2">{{ stats()!.percentage }}% do total</p>
+        </div>
+
+        <!-- Compliance Card -->
+        <div class="rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow" [class.bg-gradient-to-br]="true"
+            [class.from-emerald-50]="stats()!.isCompliant" [class.to-emerald-100]="stats()!.isCompliant"
+            [class.border-emerald-200]="stats()!.isCompliant" [class.from-red-50]="!stats()!.isCompliant"
+            [class.to-red-100]="!stats()!.isCompliant" [class.border-red-200]="!stats()!.isCompliant"
+            [class.border]="true">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 rounded-lg flex items-center justify-center shadow-lg"
+                    [class.bg-emerald-600]="stats()!.isCompliant" [class.shadow-emerald-600/20]="stats()!.isCompliant"
+                    [class.bg-red-600]="!stats()!.isCompliant" [class.shadow-red-600/20]="!stats()!.isCompliant">
+                    @if (stats()!.isCompliant) {
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                        stroke="currentColor" class="w-6 h-6 text-white">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    } @else {
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                        stroke="currentColor" class="w-6 h-6 text-white">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                    </svg>
+                    }
+                </div>
+            </div>
+            <p class="text-sm font-medium mb-1" [class.text-emerald-700]="stats()!.isCompliant"
+                [class.text-red-700]="!stats()!.isCompliant">Status de Conformidade</p>
+            <p class="text-lg font-bold" [class.text-emerald-900]="stats()!.isCompliant"
+                [class.text-red-900]="!stats()!.isCompliant">
+                {{ stats()!.isCompliant ? 'Em Conformidade' : 'Não Conforme' }}
+            </p>
+            <p class="text-sm mt-2" [class.text-emerald-600]="stats()!.isCompliant"
+                [class.text-red-600]="!stats()!.isCompliant">
+                Meta: 45% mínimo
+            </p>
+        </div>
+    </div>
+
+    <!-- Main Module Cards -->
+    <div class="mb-8">
+        <h2 class="text-xl font-bold text-gray-800 mb-4">Módulos do Sistema</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Acquisition Module -->
+            <a routerLink="/acquisition"
+                class="block bg-white rounded-xl p-6 border border-gray-200 shadow-sm hover:shadow-lg hover:border-emerald-300 transition-all group">
+                <div
+                    class="w-14 h-14 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center mb-4 shadow-lg shadow-emerald-600/20 group-hover:shadow-emerald-600/40 transition-shadow">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                        stroke="currentColor" class="w-7 h-7 text-white">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
+                    </svg>
+                </div>
+                <h3 class="text-lg font-bold text-gray-900 mb-2 group-hover:text-emerald-600 transition-colors">
+                    Aquisições</h3>
+                <p class="text-sm text-gray-600 mb-4">Gerencie fornecedores, compras e monitore a conformidade com a
+                    agricultura familiar</p>
+                <div class="flex items-center text-emerald-600 font-medium text-sm group-hover:gap-2 transition-all">
+                    <span>Acessar módulo</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                        stroke="currentColor" class="w-4 h-4 group-hover:translate-x-1 transition-transform">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                    </svg>
+                </div>
+            </a>
+
+            <!-- Nutritional Planning Module -->
+            <a routerLink="/nutritional-planning"
+                class="block bg-white rounded-xl p-6 border border-gray-200 shadow-sm hover:shadow-lg hover:border-orange-300 transition-all group">
+                <div
+                    class="w-14 h-14 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center mb-4 shadow-lg shadow-orange-600/20 group-hover:shadow-orange-600/40 transition-shadow">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                        stroke="currentColor" class="w-7 h-7 text-white">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+                    </svg>
+                </div>
+                <h3 class="text-lg font-bold text-gray-900 mb-2 group-hover:text-orange-600 transition-colors">
+                    Planejamento Nutricional</h3>
+                <p class="text-sm text-gray-600 mb-4">Cadastre ingredientes, crie pratos e planeje cardápios
+                    nutricionalmente balanceados</p>
+                <div class="flex items-center text-orange-600 font-medium text-sm group-hover:gap-2 transition-all">
+                    <span>Acessar módulo</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                        stroke="currentColor" class="w-4 h-4 group-hover:translate-x-1 transition-transform">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                    </svg>
+                </div>
+            </a>
+
+            <!-- Logistics Module -->
+            <a routerLink="/logistics"
+                class="block bg-white rounded-xl p-6 border border-gray-200 shadow-sm hover:shadow-lg hover:border-purple-300 transition-all group">
+                <div
+                    class="w-14 h-14 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center mb-4 shadow-lg shadow-purple-600/20 group-hover:shadow-purple-600/40 transition-shadow">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                        stroke="currentColor" class="w-7 h-7 text-white">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
+                    </svg>
+                </div>
+                <h3 class="text-lg font-bold text-gray-900 mb-2 group-hover:text-purple-600 transition-colors">Estoque e
+                    Logística</h3>
+                <p class="text-sm text-gray-600 mb-4">Controle de estoque, movimentações e distribuição para escolas</p>
+                <div class="flex items-center text-purple-600 font-medium text-sm group-hover:gap-2 transition-all">
+                    <span>Acessar módulo</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                        stroke="currentColor" class="w-4 h-4 group-hover:translate-x-1 transition-transform">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                    </svg>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="bg-gradient-to-r from-slate-50 to-slate-100 rounded-xl p-6 border border-slate-200">
+        <h2 class="text-xl font-bold text-gray-800 mb-4">Ações Rápidas</h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <a routerLink="/acquisition/purchases/new"
+                class="flex flex-col items-center justify-center p-4 bg-white rounded-lg border border-gray-200 hover:border-emerald-500 hover:shadow-md transition-all group">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                    stroke="currentColor"
+                    class="w-8 h-8 text-gray-400 group-hover:text-emerald-600 mb-2 transition-colors">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                </svg>
+                <span
+                    class="text-sm font-medium text-gray-700 group-hover:text-emerald-600 transition-colors text-center">Nova
+                    Compra</span>
+            </a>
+
+            <a routerLink="/acquisition/suppliers/new"
+                class="flex flex-col items-center justify-center p-4 bg-white rounded-lg border border-gray-200 hover:border-emerald-500 hover:shadow-md transition-all group">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                    stroke="currentColor"
+                    class="w-8 h-8 text-gray-400 group-hover:text-emerald-600 mb-2 transition-colors">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zM3 19.235v-.11a6.375 6.375 0 0112.75 0v.109A12.318 12.318 0 019.374 21c-2.331 0-4.512-.645-6.374-1.766z" />
+                </svg>
+                <span
+                    class="text-sm font-medium text-gray-700 group-hover:text-emerald-600 transition-colors text-center">Novo
+                    Fornecedor</span>
+            </a>
+
+            <a routerLink="/nutritional-planning/menus/new"
+                class="flex flex-col items-center justify-center p-4 bg-white rounded-lg border border-gray-200 hover:border-orange-500 hover:shadow-md transition-all group">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                    stroke="currentColor"
+                    class="w-8 h-8 text-gray-400 group-hover:text-orange-600 mb-2 transition-colors">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+                </svg>
+                <span
+                    class="text-sm font-medium text-gray-700 group-hover:text-orange-600 transition-colors text-center">Novo
+                    Cardápio</span>
+            </a>
+
+            <a routerLink="/nutritional-planning/dishes/new"
+                class="flex flex-col items-center justify-center p-4 bg-white rounded-lg border border-gray-200 hover:border-orange-500 hover:shadow-md transition-all group">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                    stroke="currentColor"
+                    class="w-8 h-8 text-gray-400 group-hover:text-orange-600 mb-2 transition-colors">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                </svg>
+                <span
+                    class="text-sm font-medium text-gray-700 group-hover:text-orange-600 transition-colors text-center">Novo
+                    Prato</span>
+            </a>
+        </div>
+    </div>
+    } @else {
+    <div class="flex items-center justify-center py-20">
+        <div class="text-center">
+            <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600 mb-4"></div>
+            <p class="text-gray-600">Carregando dados...</p>
+        </div>
+    </div>
+    }
+</div>

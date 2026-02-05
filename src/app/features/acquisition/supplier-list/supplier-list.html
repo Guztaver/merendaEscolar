@@ -1,19 +1,20 @@
 <div class="container">
     <div class="header">
-        <h1>Suppliers</h1>
-        <a [routerLink]="['/acquisition/suppliers/new']" class="btn btn-primary">Add Supplier</a>
+        <a [routerLink]="['/acquisition']" class="btn btn-secondary">← Voltar</a>
+        <h1 class="text-2xl font-bold">Fornecedores</h1>
+        <a [routerLink]="['/acquisition/suppliers/new']" class="btn btn-primary">Adicionar Fornecedor</a>
     </div>
 
     @if (suppliers().length === 0) {
-    <p class="empty-state">No suppliers found. Create your first supplier to get started.</p>
+    <p class="empty-state">Nenhum fornecedor encontrado. Crie seu primeiro fornecedor para começar.</p>
     } @else {
     <table class="table">
         <thead>
             <tr>
-                <th>Name</th>
-                <th>Document</th>
-                <th>Type</th>
-                <th>Actions</th>
+                <th>Nome</th>
+                <th>Documento</th>
+                <th>Tipo</th>
+                <th>Ações</th>
             </tr>
         </thead>
         <tbody>
@@ -27,8 +28,8 @@
                     </span>
                 </td>
                 <td class="actions">
-                    <a [routerLink]="['/acquisition/suppliers', supplier.id]" class="btn btn-secondary">Edit</a>
-                    <button (click)="deleteSupplier(supplier.id)" class="btn btn-danger">Delete</button>
+                    <a [routerLink]="['/acquisition/suppliers', supplier.id]" class="btn btn-secondary">Editar</a>
+                    <button (click)="deleteSupplier(supplier.id)" class="btn btn-danger">Excluir</button>
                 </td>
             </tr>
             }

@@ -51,7 +51,7 @@ export class AuthService {
   logout() {
     localStorage.removeItem('access_token');
     this._currentUser.set(null);
-    this.router.navigate(['/login']);
+    this.router.navigate(['/login'], { queryParams: { loggedOut: 'true' } });
   }
 
   getToken() {

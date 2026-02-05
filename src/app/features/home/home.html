@@ -12,13 +12,20 @@
             conformidade total com as normas do TCU para 2026.
         </p>
         <div class="flex justify-center gap-4">
-            <a routerLink="/login"
+            @if (authService.isAuthenticated()) {
+            <a routerLink="/dashboard"
                 class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 px-8 rounded-full shadow-lg shadow-emerald-600/30 transition-all transform hover:-translate-y-1 block">
                 Acessar Painel
             </a>
-            <a routerLink="/acquisition"
+            } @else {
+            <a routerLink="/register"
+                class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 px-8 rounded-full shadow-lg shadow-emerald-600/30 transition-all transform hover:-translate-y-1 block">
+                Criar Conta Gratuita
+            </a>
+            }
+            <a routerLink="/login"
                 class="bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 font-semibold py-3 px-8 rounded-full shadow-sm transition-all block">
-                Ver Relatórios
+                {{ authService.isAuthenticated() ? 'Ver Relatórios' : 'Entrar' }}
             </a>
         </div>
     </div>

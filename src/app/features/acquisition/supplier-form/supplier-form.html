@@ -1,30 +1,30 @@
 <div class="container">
     <div class="header">
-        <h1>{{ isEditMode() ? 'Edit Supplier' : 'New Supplier' }}</h1>
-        <a [routerLink]="['/acquisition/suppliers']" class="btn btn-secondary">Back to List</a>
+        <h1>{{ isEditMode() ? 'Editar Fornecedor' : 'Novo Fornecedor' }}</h1>
+        <a [routerLink]="['/acquisition/suppliers']" class="btn btn-secondary">Voltar à Lista</a>
     </div>
 
     <form [formGroup]="form" (ngSubmit)="onSubmit()" class="form">
         <div class="form-group">
-            <label for="name">Name *</label>
+            <label for="name">Nome *</label>
             <input type="text" id="name" formControlName="name" class="form-control"
                 [class.error]="form.controls.name.invalid && form.controls.name.touched">
             @if (form.controls.name.invalid && form.controls.name.touched) {
-            <span class="error-message">Name is required</span>
+            <span class="error-message">Nome é obrigatório</span>
             }
         </div>
 
         <div class="form-group">
-            <label for="document">Document (CNPJ/CPF) *</label>
+            <label for="document">Documento (CNPJ/CPF) *</label>
             <input type="text" id="document" formControlName="document" class="form-control"
                 [class.error]="form.controls.document.invalid && form.controls.document.touched">
             @if (form.controls.document.invalid && form.controls.document.touched) {
-            <span class="error-message">Document is required</span>
+            <span class="error-message">Documento é obrigatório</span>
             }
         </div>
 
         <div class="form-group">
-            <label for="type">Type *</label>
+            <label for="type">Tipo *</label>
             <select id="type" formControlName="type" class="form-control">
                 @for (type of supplierTypes; track type.value) {
                 <option [value]="type.value">{{ type.label }}</option>
@@ -34,9 +34,9 @@
 
         <div class="form-actions">
             <button type="submit" class="btn btn-primary" [disabled]="form.invalid">
-                {{ isEditMode() ? 'Update' : 'Create' }}
+                {{ isEditMode() ? 'Atualizar' : 'Criar' }}
             </button>
-            <a [routerLink]="['/acquisition/suppliers']" class="btn btn-secondary">Cancel</a>
+            <a [routerLink]="['/acquisition/suppliers']" class="btn btn-secondary">Cancelar</a>
         </div>
     </form>
 </div>

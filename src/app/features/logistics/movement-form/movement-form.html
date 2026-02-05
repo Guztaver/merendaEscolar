@@ -1,0 +1,134 @@
+<div class="container">
+    <div class="header">
+        <h1 class="text-2xl font-bold text-gray-800">Registrar Movimentação de Estoque</h1>
+        <a [routerLink]="['/logistics/dashboard']" class="btn btn-secondary">Voltar ao Painel</a>
+    </div>
+
+    @if (errorMessage()) {
+        <div class="alert alert-error">
+            {{ errorMessage() }}
+        </div>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="movement-form">
+        <div class="form-grid">
+            <!-- Dados da Movimentação -->
+            <div class="form-section">
+                <h2 class="section-title">Dados da Movimentação</h2>
+
+                <div class="form-group">
+                    <label for="stockItemId">Item do Estoque *</label>
+                    <select id="stockItemId" formControlName="stockItemId" class="form-control">
+                        <option value="">Selecione um item...</option>
+                        @for (item of stockItems(); track item.id) {
+                            <option [value]="item.id">{{ item.name }} ({{ item.currentQuantity }} {{ item.unit }})</option>
+                        }
+                    </select>
+                    @if (isFieldInvalid('stockItemId')) {
+                        <span class="error-message">{{ getErrorMessage('stockItemId') }}</span>
+                    }
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group flex-1">
+                        <label for="movementType">Tipo de Movimentação *</label>
+                        <select id="movementType" formControlName="movementType" class="form-control">
+                            @for (type of [MovementType.IN, MovementType.OUT, MovementType.ADJUSTMENT]; track type) {
+                                <option [value]="type">{{ getMovementTypeLabel(type) }}</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="form-group flex-1">
+                        <label for="reason">Motivo *</label>
+                        <select id="reason" formControlName="reason" class="form-control">
+                            @for (reason of getAvailableReasons(); track reason) {
+                                <option [value]="reason">{{ getReasonLabel(reason) }}</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="quantity">Quantidade *</label>
+                    <input
+                        type="number"
+                        id="quantity"
+                        formControlName="quantity"
+                        class="form-control"
+                        step="0.01"
+                        min="0.01"
+                    />
+                    @if (isFieldInvalid('quantity')) {
+                        <span class="error-message">{{ getErrorMessage('quantity') }}</span>
+                    }
+                </div>
+
+                <div class="form-group">
+                    <label for="notes">Observações</label>
+                    <textarea
+                        id="notes"
+                        formControlName="notes"
+                        class="form-control"
+                        rows="3"
+                        placeholder="Informações adicionais sobre esta movimentação..."
+                    ></textarea>
+                </div>
+            </div>
+
+            <!-- Detalhes Adicionais -->
+            <div class="form-section">
+                <h2 class="section-title">Detalhes Adicionais</h2>
+
+                <div class="form-group">
+                    <label for="batchNumber">Número do Lote</label>
+                    <input
+                        type="text"
+                        id="batchNumber"
+                        formControlName="batchNumber"
+                        class="form-control"
+                        placeholder="Código do lote (opcional)"
+                    />
+                </div>
+
+                <div class="form-group">
+                    <label for="expiryDate">Data de Validade</label>
+                    <input
+                        type="date"
+                        id="expiryDate"
+                        formControlName="expiryDate"
+                        class="form-control"
+                    />
+                </div>
+
+                <div class="form-group">
+                    <label for="documentNumber">Número do Documento</label>
+                    <input
+                        type="text"
+                        id="documentNumber"
+                        formControlName="documentNumber"
+                        class="form-control"
+                        placeholder="Nota fiscal, documento de doação, etc."
+                    />
+                </div>
+
+                <div class="info-box">
+                    <strong>💡 Dica:</strong>
+                    <p>Para entradas, preencha o número do lote e validade para controle de vencimentos.</p>
+                    <p>Para saídas por uso, indique qual preparação será feita nas observações.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="button" class="btn btn-secondary" (click)="cancel()">Cancelar</button>
+            <button type="submit" class="btn btn-primary" [disabled]="isLoading()">
+                @if (isLoading()) {
+                    Registrando...
+                } @else {
+                    Registrar Movimentação
+                }
+            </button>
+        </div>
+    </form>
+</div>

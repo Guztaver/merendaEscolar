@@ -1,5 +1,9 @@
 .container {
+    max-width: 1280px;
+    margin: 0 auto;
     padding: 2rem;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .header {
@@ -164,4 +168,89 @@
 
 .btn-secondary:hover {
     background-color: #616161;
+}
+
+.purchases-section {
+    margin-top: 3rem;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.section-header h2 {
+    margin: 0;
+}
+
+.table-container {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.purchases-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.purchases-table thead {
+    background-color: #f8f9fa;
+}
+
+.purchases-table th {
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+    color: #333;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.purchases-table td {
+    padding: 1rem;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.purchases-table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+.purchases-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.amount {
+    font-weight: 600;
+    color: #1976d2;
+}
+
+.badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.badge-family {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+}
+
+.badge-regular {
+    background-color: #e3f2fd;
+    color: #1565c0;
+}
+
+.no-data {
+    text-align: center;
+    padding: 3rem;
+    color: #666;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }

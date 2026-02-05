@@ -1,0 +1,127 @@
+<div class="container">
+  <div class="header">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-800">Itens do Estoque</h1>
+      <p class="text-gray-600">Gerencie todos os itens do seu estoque</p>
+    </div>
+    <a [routerLink]="['/logistics/stock-items/new']" class="btn btn-primary">+ Novo Item</a>
+  </div>
+
+  <div class="filters">
+    <div class="search-box">
+      <input
+        type="text"
+        placeholder="Buscar por nome, código ou localização..."
+        [value]="searchTerm()"
+        (input)="onSearchChange($event)"
+        class="search-input"
+      />
+    </div>
+
+    <select [value]="filterType()" (change)="onTypeChange($event)" class="filter-select">
+      @for (option of typeOptions; track option.value) {
+      <option [value]="option.value">{{ option.label }}</option>
+      }
+    </select>
+
+    <select [value]="filterStatus()" (change)="onStatusChange($event)" class="filter-select">
+      @for (option of statusOptions; track option.value) {
+      <option [value]="option.value">{{ option.label }}</option>
+      }
+    </select>
+  </div>
+
+  @if (loading()) {
+  <div class="loading">Carregando itens...</div>
+  } @else if (filteredItems().length === 0) {
+  <div class="empty-state">
+    <div class="empty-icon">📦</div>
+    <h3>Nenhum item encontrado</h3>
+    <p>Comece adicionando itens ao estoque ou ajuste os filtros.</p>
+    <a [routerLink]="['/logistics/stock-items/new']" class="btn btn-primary"
+      >+ Adicionar Primeiro Item</a
+    >
+  </div>
+  } @else {
+  <div class="items-grid">
+    @for (item of filteredItems(); track item.id) {
+    <div class="item-card" [class]="getStatusClass(item)">
+      <div class="card-header">
+        <div class="item-code">{{ item.code || 'SEM CÓDIGO' }}</div>
+        <div class="item-type">{{ getTypeLabel(item.type) }}</div>
+      </div>
+
+      <h3 class="item-name">{{ item.name }}</h3>
+
+      <div class="quantity-section">
+        <div class="quantity-display">
+          <span class="quantity-value">{{ item.currentQuantity }}</span>
+          <span class="quantity-unit">{{ item.unit }}</span>
+        </div>
+        <div class="status-badge">{{ getStatusLabel(item) }}</div>
+      </div>
+
+      @if (item.maxCapacity > 0) {
+      <div class="progress-bar">
+        <div class="progress-fill" [style.width.%]="getStockPercentage(item)"></div>
+      </div>
+      <div class="capacity-info">
+        <span>Mín: {{ item.minQuantity }} {{ item.unit }}</span>
+        <span>Max: {{ item.maxCapacity }} {{ item.unit }}</span>
+      </div>
+      }
+
+      <div class="card-details">
+        <div class="detail-row">
+          <span class="detail-label">💰 Custo Unitário:</span>
+          <span class="detail-value">{{ formatCurrency(item.unitCost) }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">📍 Localização:</span>
+          <span class="detail-value">{{ item.location }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">💵 Valor Total:</span>
+          <span class="detail-value"
+            >{{ formatCurrency(item.currentQuantity * item.unitCost) }}</span
+          >
+        </div>
+      </div>
+
+      <div class="card-actions">
+        <button class="action-btn btn-view" (click)="viewItem(item)" title="Ver detalhes">
+          👁️ Ver
+        </button>
+        <button class="action-btn btn-edit" (click)="editItem(item)" title="Editar">
+          ✏️ Editar
+        </button>
+        <button
+          class="action-btn"
+          [class.btn-activate]="!item.isActive"
+          [class.btn-deactivate]="item.isActive"
+          (click)="toggleActive(item)"
+          [title]="item.isActive ? 'Desativar' : 'Ativar'"
+        >
+          {{ item.isActive ? '🔒 Inativar' : '✅ Ativar' }}
+        </button>
+        <button class="action-btn btn-delete" (click)="deleteItem(item)" title="Excluir">
+          🗑️ Excluir
+        </button>
+      </div>
+    </div>
+    }
+  </div>
+
+  <div class="summary">
+    <p class="text-gray-600">
+      Mostrando <strong>{{ filteredItems().length }}</strong> de
+      <strong>{{ stockItems().length }}</strong> itens
+    </p>
+  </div>
+  }
+</div>
+
+<!-- Modal de Visualização de Item -->
+@if (getSelectedItem()) {
+<app-stock-item-modal [item]="getSelectedItem()!" [isOpen]="isModalOpen()" (close)="closeModal()" />
+}

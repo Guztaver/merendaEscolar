@@ -24,7 +24,7 @@ export class SupplierListComponent {
     }
 
     deleteSupplier(id: string) {
-        if (confirm('Are you sure you want to delete this supplier?')) {
+        if (confirm('Tem certeza de que deseja excluir este fornecedor?')) {
             this.acquisitionService.deleteSupplier(id).subscribe(() => {
                 this.loadSuppliers();
             });
@@ -32,6 +32,6 @@ export class SupplierListComponent {
     }
 
     getSupplierTypeLabel(type: string): string {
-        return type === 'family_farming' ? 'Family Farming' : 'Regular';
+        return type === 'family_farming' ? 'Agricultura Familiar' : 'Regular';
     }
 }

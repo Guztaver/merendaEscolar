@@ -11,7 +11,7 @@ export class AuthController {
     async login(@Body() signInDto: Record<string, any>) {
         const user = await this.authService.validateUser(signInDto.email, signInDto.password);
         if (!user) {
-            throw new UnauthorizedException('Invalid credentials');
+            throw new UnauthorizedException('Credenciais inválidas');
         }
         return this.authService.login(user); // user here is the result of validateUser (stripped password)
         // Wait, validateUser returns entity minus password, but login expects { email, id }

@@ -1,34 +1,140 @@
-<div class="flex min-h-screen items-center justify-center bg-gray-100">
-    <div class="w-full max-w-md space-y-8 rounded-lg bg-white p-8 shadow-md">
-        <div>
-            <h2 class="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">Entre na sua conta</h2>
+<div class="login-container">
+    <div class="login-background"></div>
+    <div class="login-card">
+        <!-- Logo e Título -->
+        <div class="login-header">
+            <div class="logo-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                    <path d="M2 17l10 5 10-5"/>
+                    <path d="M2 12l10 5 10-5"/>
+                </svg>
+            </div>
+            <h1 class="login-title">Merenda Escolar</h1>
+            <p class="login-subtitle">Sistema de Gestão</p>
         </div>
-        <form class="mt-8 space-y-6" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-            <div class="-space-y-px rounded-md shadow-sm">
-                <div>
-                    <label for="email-address" class="sr-only">Endereço de e-mail</label>
-                    <input id="email-address" type="email" formControlName="email" required
-                        class="relative block w-full rounded-t-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6 pl-2"
-                        placeholder="Endereço de e-mail">
+
+        <!-- Mensagens -->
+        @if (successMessage()) {
+            <div class="alert alert-success">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                    <polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+                <span>{{ successMessage() }}</span>
+            </div>
+        }
+
+        @if (errorMessage()) {
+            <div class="alert alert-error">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="12" y1="8" x2="12" y2="12"/>
+                    <line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+                <span>{{ errorMessage() }}</span>
+                <button class="alert-close" (click)="errorMessage.set('')">&times;</button>
+            </div>
+        }
+
+        <!-- Formulário -->
+        <form class="login-form" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+            <!-- Email -->
+            <div class="form-group">
+                <label for="email" class="form-label">E-mail</label>
+                <div class="input-wrapper">
+                    <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                        <polyline points="22,6 12,13 2,6"/>
+                    </svg>
+                    <input
+                        id="email"
+                        type="email"
+                        formControlName="email"
+                        class="form-input"
+                        [class.error]="email?.touched && email?.invalid"
+                        placeholder="seu@email.com"
+                        autocomplete="email"
+                    />
                 </div>
-                <div>
-                    <label for="password" class="sr-only">Senha</label>
-                    <input id="password" type="password" formControlName="password" required
-                        class="relative block w-full rounded-b-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6 pl-2"
-                        placeholder="Senha">
-                </div>
+                @if (email?.touched && emailError) {
+                    <span class="error-text">{{ emailError }}</span>
+                }
             </div>
 
-            <div>
-                <button type="submit" [disabled]="loginForm.invalid"
-                    class="group relative flex w-full justify-center rounded-md bg-emerald-600 px-3 py-2 text-sm font-semibold text-white hover:bg-emerald-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600 disabled:opacity-50">
-                    Entrar
-                </button>
+            <!-- Senha -->
+            <div class="form-group">
+                <label for="password" class="form-label">Senha</label>
+                <div class="input-wrapper">
+                    <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                    </svg>
+                    <input
+                        id="password"
+                        [type]="showPassword() ? 'text' : 'password'"
+                        formControlName="password"
+                        class="form-input"
+                        [class.error]="password?.touched && password?.invalid"
+                        placeholder="••••••••"
+                        autocomplete="current-password"
+                    />
+                    <button
+                        type="button"
+                        class="password-toggle"
+                        (click)="togglePassword()"
+                        [attr.aria-label]="showPassword() ? 'Ocultar senha' : 'Mostrar senha'"
+                    >
+                        @if (showPassword()) {
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+                                <line x1="1" y1="1" x2="23" y2="23"/>
+                            </svg>
+                        } @else {
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                <circle cx="12" cy="12" r="3"/>
+                            </svg>
+                        }
+                    </button>
+                </div>
+                @if (password?.touched && passwordError) {
+                    <span class="error-text">{{ passwordError }}</span>
+                }
             </div>
-            <div class="text-center text-sm">
-                <a routerLink="/register" class="font-semibold text-emerald-600 hover:text-emerald-500">Não tem uma
-                    conta? Cadastre-se</a>
-            </div>
+
+            <!-- Botão Submit -->
+            <button
+                type="submit"
+                class="submit-button"
+                [disabled]="loginForm.invalid || loading()"
+                [class.loading]="loading()"
+            >
+                @if (loading()) {
+                    <svg class="spinner" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
+                        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" class="spinner-track"/>
+                        <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" stroke-width="4" class="spinner-path"/>
+                    </svg>
+                    <span>Entrando...</span>
+                } @else {
+                    <span>Entrar</span>
+                }
+            </button>
         </form>
+
+        <!-- Link de Registro -->
+        <div class="login-footer">
+            <p class="footer-text">
+                Não tem uma conta?
+                <a routerLink="/register" class="footer-link">Cadastre-se</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- Footer decorativo -->
+    <div class="decorative-footer">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
+            <path fill="rgba(16, 185, 129, 0.1)" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,112C672,96,768,96,864,112C960,128,1056,160,1152,160C1248,160,1344,128,1392,112L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+        </svg>
     </div>
 </div>

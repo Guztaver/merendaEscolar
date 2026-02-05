@@ -24,7 +24,7 @@ export class PurchaseListComponent {
     }
 
     deletePurchase(id: string) {
-        if (confirm('Are you sure you want to delete this purchase?')) {
+        if (confirm('Tem certeza de que deseja excluir esta compra?')) {
             this.acquisitionService.deletePurchase(id).subscribe(() => {
                 this.loadPurchases();
             });

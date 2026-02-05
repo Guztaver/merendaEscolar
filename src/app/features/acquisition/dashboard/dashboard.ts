@@ -1,8 +1,8 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { AcquisitionResourceService, FamilyFarmingStats } from '../../../core/api/acquisition-resource.service';
+import { AcquisitionResourceService, FamilyFarmingStats, Purchase } from '../../../core/api/acquisition-resource.service';
 
 @Component({
     selector: 'app-dashboard',
@@ -13,19 +13,50 @@ import { AcquisitionResourceService, FamilyFarmingStats } from '../../../core/ap
 export class DashboardComponent {
     private acquisitionService = inject(AcquisitionResourceService);
     stats = signal<FamilyFarmingStats | null>(null);
+    allPurchases = signal<Purchase[]>([]);
     yearControl = new FormControl(new Date().getFullYear());
+    availableYears = this.generateYearOptions();
+
+    // Computed signal to filter purchases by selected year
+    purchases = computed(() => {
+        const year = this.yearControl.value ?? new Date().getFullYear();
+        return this.allPurchases().filter(purchase => {
+            const purchaseYear = new Date(purchase.date).getFullYear();
+            return purchaseYear === year;
+        });
+    });
+
+    private generateYearOptions(): number[] {
+        const currentYear = new Date().getFullYear();
+        const years: number[] = [];
+        for (let year = currentYear - 5; year <= currentYear + 1; year++) {
+            years.push(year);
+        }
+        return years;
+    }
 
     constructor() {
-        this.loadStats();
+        this.loadData();
         this.yearControl.valueChanges.subscribe(() => {
             this.loadStats();
         });
+    }
+
+    loadData() {
+        this.loadStats();
+        this.loadPurchases();
     }
 
     loadStats() {
         const year = this.yearControl.value ?? new Date().getFullYear();
         this.acquisitionService.getDashboard(year).subscribe(stats => {
             this.stats.set(stats);
+        });
+    }
+
+    loadPurchases() {
+        this.acquisitionService.findAllPurchases().subscribe(purchases => {
+            this.allPurchases.set(purchases);
         });
     }
 
@@ -46,7 +77,11 @@ export class DashboardComponent {
         const stats = this.stats();
         if (!stats) return '';
         return stats.isCompliant
-            ? '✓ Compliant with 45% minimum requirement'
-            : '✗ Below 45% minimum requirement';
+            ? '✓ Em conformidade com o requisito mínimo de 45%'
+            : '✗ Abaixo do requisito mínimo de 45%';
+    }
+
+    formatDate(date: string): string {
+        return new Intl.DateTimeFormat('pt-BR').format(new Date(date));
     }
 }

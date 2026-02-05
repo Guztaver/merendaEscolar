@@ -1,0 +1,142 @@
+<div class="modal-backdrop" *ngIf="isOpen()" (click)="onBackdropClick($event)" (keydown)="onKeyDown($event)" tabindex="0">
+    <div class="modal-container" role="dialog" aria-modal="true" [attr.aria-label]="'Detalhes do item: ' + item().name">
+        <!-- Header -->
+        <div class="modal-header">
+            <div class="header-content">
+                <div class="item-code">{{ item().code || 'SEM CÓDIGO' }}</div>
+                <div class="item-type">{{ getTypeLabel(item().type) }}</div>
+            </div>
+            <button class="close-btn" (click)="closeModal()" aria-label="Fechar modal">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Content -->
+        <div class="modal-content">
+            <!-- Title and Status -->
+            <div class="title-section">
+                <h2 class="item-name">{{ item().name }}</h2>
+                <div class="status-badge" [ngClass]="getStatusClass()">{{ getStatusLabel() }}</div>
+            </div>
+
+            <!-- Quantity Display -->
+            <div class="quantity-card">
+                <div class="quantity-main">
+                    <span class="quantity-value">{{ item().currentQuantity }}</span>
+                    <span class="quantity-unit">{{ item().unit }}</span>
+                </div>
+                @if (item().maxCapacity > 0) {
+                    <div class="progress-container">
+                        <div class="progress-bar">
+                            <div class="progress-fill" [style.width.%]="getStockPercentage()"></div>
+                        </div>
+                        <div class="capacity-info">
+                            <span>Min: {{ item().minQuantity }} {{ item().unit }}</span>
+                            <span>Max: {{ item().maxCapacity }} {{ item().unit }}</span>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <!-- Details Grid -->
+            <div class="details-grid">
+                <div class="detail-item">
+                    <span class="detail-label">💰 Custo Unitário</span>
+                    <span class="detail-value">{{ formatCurrency(item().unitCost) }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">📍 Localização</span>
+                    <span class="detail-value">{{ item().location }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">💵 Valor Total</span>
+                    <span class="detail-value">{{ formatCurrency(item().currentQuantity * item().unitCost) }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">📊 Status</span>
+                    <span class="detail-value status-text" [ngClass]="getStatusClass()">
+                        {{ item().isActive ? 'Ativo' : 'Inativo' }}
+                    </span>
+                </div>
+            </div>
+
+            <!-- Timestamps -->
+            <div class="timestamps">
+                <div class="timestamp-item">
+                    <span class="timestamp-label">Criado em:</span>
+                    <span class="timestamp-value">{{ formatDate(item().createdAt) }}</span>
+                </div>
+                <div class="timestamp-item">
+                    <span class="timestamp-label">Atualizado em:</span>
+                    <span class="timestamp-value">{{ formatDate(item().updatedAt) }}</span>
+                </div>
+            </div>
+
+            <!-- Movements Section -->
+            <div class="movements-section">
+                <div class="movements-header" (click)="toggleMovements()">
+                    <h3 class="movements-title">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                        </svg>
+                        Histórico de Movimentações
+                    </h3>
+                    <svg class="chevron" [class.rotated]="showMovements()" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 12 15 18 9"/>
+                    </svg>
+                </div>
+
+                @if (showMovements()) {
+                    <div class="movements-content">
+                        @if (loading()) {
+                            <div class="movements-loading">Carregando movimentações...</div>
+                        } @else if (movements().length === 0) {
+                            <div class="movements-empty">
+                                <div class="empty-icon">📋</div>
+                                <p>Nenhuma movimentação registrada</p>
+                            </div>
+                        } @else {
+                            <div class="movements-list">
+                                @for (movement of movements(); track movement.id) {
+                                    <div class="movement-item" [ngClass]="getMovementTypeClass(movement.movementType)">
+                                        <div class="movement-header">
+                                            <span class="movement-type">{{ getMovementTypeLabel(movement.movementType) }}</span>
+                                            <span class="movement-date">{{ formatDate(movement.createdAt) }}</span>
+                                        </div>
+                                        <div class="movement-details">
+                                            <div class="movement-quantity">
+                                                <span class="quantity-change" [ngClass]="movement.movementType === 'IN' ? 'positive' : 'negative'">
+                                                    {{ movement.movementType === 'IN' ? '+' : '-' }}{{ movement.quantity }} {{ item().unit }}
+                                                </span>
+                                                <span class="quantity-balance">
+                                                    {{ movement.previousBalance }} → {{ movement.newBalance }}
+                                                </span>
+                                            </div>
+                                            <div class="movement-reason">{{ getMovementReasonLabel(movement.reason) }}</div>
+                                        </div>
+                                        @if (movement.notes) {
+                                            <div class="movement-notes">📝 {{ movement.notes }}</div>
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Footer Actions -->
+        <div class="modal-footer">
+            <button class="btn btn-secondary" (click)="closeModal()">
+                Fechar
+            </button>
+            <a [routerLink]="'/logistics/stock-items/' + item().id" class="btn btn-primary" (click)="closeModal()">
+                ✏️ Editar Item
+            </a>
+        </div>
+    </div>
+</div>
