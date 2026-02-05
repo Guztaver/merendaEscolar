@@ -1,13 +1,14 @@
-FROM node:20-alpine
-
+# Stage 1: Build
+FROM node:20-alpine AS build
 WORKDIR /usr/src/app
-
 COPY package*.json ./
-
-RUN npm install
-
+RUN npm ci
 COPY . .
+RUN npm run build -- --configuration production
 
-# Build the application logic if needed, but for dev we usually just serve
-# The host check is important for Docker
-CMD ["npm", "run", "start", "--", "--host", "0.0.0.0", "--poll", "2000"]
+# Stage 2: Serve
+FROM nginx:alpine
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=build /usr/src/app/dist/merenda-escolar/browser /usr/share/nginx/html
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
