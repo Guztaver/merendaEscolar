@@ -9,6 +9,6 @@ RUN npm run build -- --configuration production
 # Stage 2: Serve
 FROM nginx:alpine
 COPY nginx.conf /etc/nginx/conf.d/default.conf
-COPY --from=build /usr/src/app/dist/merenda-escolar/browser /usr/share/nginx/html
+COPY --from=build /usr/src/app/dist/merendaEscolar/browser /usr/share/nginx/html
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
